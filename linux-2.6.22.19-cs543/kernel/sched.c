@@ -1941,6 +1941,9 @@ asmlinkage void schedule_tail(struct task_struct *prev)
 		put_user(current->pid, current->set_child_tid);
 }
 
+asmlinkage long sys_mygetpid(void) {
+	return current->tgid;
+}
 /*
  * context_switch - switch to the new MM and the new
  * thread's register state.

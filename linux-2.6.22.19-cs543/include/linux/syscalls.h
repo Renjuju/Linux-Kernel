@@ -199,7 +199,7 @@ asmlinkage long sys_sgetmask(void);
 asmlinkage long sys_ssetmask(int newmask);
 asmlinkage unsigned long sys_signal(int sig, __sighandler_t handler);
 asmlinkage long sys_pause(void);
-
+asmlinkage long sys_mygetpid(void);
 asmlinkage long sys_sync(void);
 asmlinkage long sys_fsync(unsigned int fd);
 asmlinkage long sys_fdatasync(unsigned int fd);
