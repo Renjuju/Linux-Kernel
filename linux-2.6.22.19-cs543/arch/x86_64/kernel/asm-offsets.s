@@ -1,5 +1,5 @@
 	.file	"asm-offsets.c"
-# GNU C (Ubuntu 4.8.4-2ubuntu1~14.04.1) version 4.8.4 (x86_64-linux-gnu)
+# GNU C (Ubuntu 4.8.4-2ubuntu1~14.04.3) version 4.8.4 (x86_64-linux-gnu)
 #	compiled by GNU C version 4.8.4, GMP version 5.1.3, MPFR version 3.1.2-p3, MPC version 1.0.1
 # GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
 # options passed:  -nostdinc -I include -imultiarch x86_64-linux-gnu
@@ -205,7 +205,7 @@ main:
 	.loc 1 83 0
 # 83 "arch/x86_64/kernel/asm-offsets.c" 1
 	
-->__NR_syscall_max $284 sizeof(syscalls) - 1	#
+->__NR_syscall_max $285 sizeof(syscalls) - 1	#
 # 0 "" 2
 	.loc 1 85 0
 #NO_APP
@@ -12927,7 +12927,7 @@ main:
 	.long	0x68b7
 	.uleb128 0x39
 	.long	0x29
-	.value	0x11c
+	.value	0x11d
 	.byte	0
 	.uleb128 0x3a
 	.long	.LASF1381
@@ -14262,6 +14262,8 @@ main:
 	.string	"ki_left"
 .LASF1016:
 	.string	"last_type"
+.LASF1379:
+	.string	"/home/rr553/cs370/rr553-cs370-summer2016/linux-2.6.22.19-cs543"
 .LASF642:
 	.string	"sa_restorer"
 .LASF342:
@@ -14296,8 +14298,6 @@ main:
 	.string	"nrpages"
 .LASF596:
 	.string	"free"
-.LASF1379:
-	.string	"/home/rr553/cs370/rr553-cs370-summer2016/P1/linux-2.6.22.19-cs543"
 .LASF416:
 	.string	"atime"
 .LASF370:
@@ -16665,5 +16665,5 @@ main:
 	.string	"start"
 .LASF348:
 	.string	"gsindex"
-	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.1) 4.8.4"
+	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.3) 4.8.4"
 	.section	.note.GNU-stack,"",@progbits

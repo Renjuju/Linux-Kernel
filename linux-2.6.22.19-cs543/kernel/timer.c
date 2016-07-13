@@ -803,7 +803,7 @@ unsigned long next_timer_interrupt(void)
 #endif
 
 /*
- * Called from the timer interrupt handler to charge one tick to the current 
+ * Called from the timer interrupt handler to charge one tick to the current
  * process.  user_tick is 1 if the tick is user time, 0 for system.
  */
 void update_process_times(int user_tick)
@@ -895,7 +895,7 @@ static inline void update_times(unsigned long ticks)
 	update_wall_time();
 	calc_load(ticks);
 }
-  
+
 /*
  * The 64-bit jiffies value is not atomic - you MUST NOT read it
  * without sampling the sequence number in xtime_lock.
@@ -937,6 +937,9 @@ asmlinkage unsigned long sys_alarm(unsigned int seconds)
  *
  * This is SMP safe as current->tgid does not change.
  */
+
+
+
 asmlinkage long sys_getpid(void)
 {
 	return current->tgid;
@@ -1091,7 +1094,7 @@ asmlinkage long sys_gettid(void)
 /**
  * do_sysinfo - fill in sysinfo struct
  * @info: pointer to buffer to fill
- */ 
+ */
 int do_sysinfo(struct sysinfo *info)
 {
 	unsigned long mem_total, sav_total;
