@@ -1,10 +1,11 @@
 Renju Radhakrishnan
 
-CS370 Operating Systems: Assignment 1
 
-Processes and Filesystems (40 Points)
+# CS370 Operating Systems: Assignment 1
 
-[5 Points] Processes. What differentiates a program, an executable, and a process?
+## Processes and Filesystems (40 Points)
+
+### [5 Points] Processes. What differentiates a program, an executable, and a process?
 Program: A program is a set of instructions inside a file e.g. helloWorld.java 
 
 Executable: An executable is the compiled version of a program and can be directly executed
@@ -12,8 +13,8 @@ Executable: An executable is the compiled version of a program and can be direct
 Process: A process is an executable that is currently ran by the operating system, e.g. a helloWorld process running
 
 
-[5 Points] Process creation. Write a C/C++ program in which a parent forks a child, and the child forks a grandchild. The grandchild writes: "My process id is X, my parent's id is Y, and my Grandparent's id is Z" (where X, Y, and Z are the Unix process ids), and no other process writes.
-
+### [5 Points] Process creation. Write a C/C++ program in which a parent forks a child, and the child forks a grandchild. The grandchild writes: "My process id is X, my parent's id is Y, and my Grandparent's id is Z" (where X, Y, and Z are the Unix process ids), and no other process writes.
+```c
 #include  <stdio.h>
 #include  <sys/types.h>
 
@@ -31,9 +32,9 @@ void  main(void) {
          }
     }
 }
+```
 
-
-[5 Points] Scheduling. How can fairness and throughput be competing goals for a scheduler? Give an example where a fair scheduler makes bad use of the CPU, and an example where a high-throughput scheduler is unfair.
+### [5 Points] Scheduling. How can fairness and throughput be competing goals for a scheduler? Give an example where a fair scheduler makes bad use of the CPU, and an example where a high-throughput scheduler is unfair.
 
 Fairness is mainly focusing on sharing the CPU among users in some equitable way
 Throughput focuses in on minimizing overhead along with efficiently usin resources such as hte CPU, disk, and memory
@@ -43,30 +44,30 @@ For example, with fairness, each process gets an equal amount of time to run, th
 thus is a bad use of the CPU
 Throughput can be unfair when a big process takes all the time to run while all the little processes are starved for cpu time
 
-[5 Points] Deadlock. What does a resource allocation graph show? What does a cycle in the the resource graph mean?
+### [5 Points] Deadlock. What does a resource allocation graph show? What does a cycle in the the resource graph mean?
 
 A resource allocation graph shows resources that processes hold and the processes that are waiting for certain resources. 
 A cycle in the resource graph means that the process will deadlock. 
 
-[5 Points] How does a bootloader like LILO know where to find the kernel image it is supposed to load on disk? (Hint: Whatâ€™s the difference between â€œnativeâ€ LILO and /sbin/lilo?)
+### [5 Points] How does a bootloader like LILO know where to find the kernel image it is supposed to load on disk? (Hint: Whatâ€™s the difference between â€œnativeâ€ LILO and /sbin/lilo?)
 
 The LILO bootloader doesn't understand how filesystems work, thus the /sbin/lilo is called as it does understand filesystems, thus it get's the 
 path and translates it into addresses that the bootloader can understand. 
 
-[5 Points] Explain how pid 0 and pid 1 are ultimately created by the execution of init/main.c:start_kernel() in the Linux kernel.
+### [5 Points] Explain how pid 0 and pid 1 are ultimately created by the execution of init/main.c:start_kernel() in the Linux kernel.
 
 Pid 0 is created as the scheduler and pid 1 is created through the init function in main.c, which references fork.c,
 thus giving the ability to create new processes. 
 
 pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
 
-[5 Points] Why are parameters to syscalls passed in registers instead of the stack?  What happens on the Intel architecture if there are more than 6 parameters to a system call?
+### [5 Points] Why are parameters to syscalls passed in registers instead of the stack?  What happens on the Intel architecture if there are more than 6 parameters to a system call?
 
 The BUG_ON function gets called if there are more than 6 parameters to a system call
 The paramters to syscalls are passed in registers intead of a stack as a limit to the number of parameters passed in.
 
-[5 points] write a program that spawns three child processes.  the first child sends a signal to the parent (you'll need the parent's pid!), which the parent shall catch.  the second child waits for 10 seconds and then terminates.  once the parent detects that both of these has happened, it should signal the third child to terminate.
-
+### [5 points] write a program that spawns three child processes.  the first child sends a signal to the parent (you'll need the parent's pid!), which the parent shall catch.  the second child waits for 10 seconds and then terminates.  once the parent detects that both of these has happened, it should signal the third child to terminate.
+```c
 #include  <stdio.h>
 #include  <sys/types.h>
 #include <unistd.h> 
@@ -98,3 +99,4 @@ void main(void) {
         kill(getpid(), SIGKILL);    
     }
 }
+```
