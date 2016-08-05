@@ -1,0 +1,188 @@
+diff --git a/P3/testSendAndReceive.c b/P3/testSendAndReceive.c
+new file mode 100644
+index 0000000..110eedb
+--- /dev/null
++++ b/P3/testSendAndReceive.c
+@@ -0,0 +1,68 @@
++#include <sys/types.h>
++#include <string.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++
++int pids[] = { -1, -1};
++
++int sendMessage(pid_t pid) {
++	char * str1 = "Hello world!";
++	size_t len1 = strlen(str1);
++
++	char *str = (char*) malloc(len1 + 1);
++	memcpy(str, str1, len1);
++
++	int x = 0;
++	int length = sizeof(pids) / sizeof(pids[0]);
++	int spin = 0;
++
++	for (x; x < length; x++) {
++		if (pids[x] != -1) {
++			printf("Sending message to %d\n", pids[x]);
++			syscall(293, pids[x], sizeof(char*) * (len1 + 1), str );
++		}
++	}
++}
++
++void waitForMessage() {
++	int spin = 0;
++
++	printf("Waiting for pids\n");
++	while (spin == 0) {
++		int x = 0;
++		int length = sizeof(pids) / sizeof(pids[0]);
++		for (x; x < length; x++) {
++			if (pids[x] != -1) {
++				char * message = (char*) malloc(13);
++				syscall(294, pids[x], sizeof(char*) * 13, message);
++				printf("Recieved message from pid, releasing\n");
++			}
++		}
++		spin = 1;
++	}
++}
++
++void sigint_release() {
++	printf("'release' process %d\n", getpid());
++	exit(0);
++}
++
++int main() {
++	pid_t forkOne, forkTwo, forkThree, forkFour;
++	forkOne = fork();
++	if (!forkOne) {
++		printf("First fork! %d\n", getpid());
++		pids[0] = getpid();
++		sendMessage(getpid());
++	} else {
++		forkTwo = fork();
++		if (!forkTwo) {
++			printf("Second fork %d\n", getpid());
++			pids[1] = getpid();
++			sendMessage(getpid());
++		}
++		waitForMessage();
++	}
++}
+diff --git a/README.md b/README.md
+index d585ad5..417c14c 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,8 @@
++#P3 
++##Screencast
++Link to the screencast
++https://www.youtube.com/watch?v=19e_F-gD4X0
++
+ #P1
+ In order to display the hello world message, use:
+ ```bash
+diff --git a/linux-2.6.22.19-cs543/arch/i386/kernel/syscall_table.S b/linux-2.6.22.19-cs543/arch/i386/kernel/syscall_table.S
+index 5eab6cd..40cec32 100644
+--- a/linux-2.6.22.19-cs543/arch/i386/kernel/syscall_table.S
++++ b/linux-2.6.22.19-cs543/arch/i386/kernel/syscall_table.S
+@@ -331,3 +331,5 @@ ENTRY(sys_call_table)
+ 	.long sys_quad
+ 	.long sys_swipe
+ 	.long sys_myjoin
++	.long sys_mysend
++	.long sys_myreceive /*330*/
+diff --git a/linux-2.6.22.19-cs543/include/asm-x86_64/unistd.h b/linux-2.6.22.19-cs543/include/asm-x86_64/unistd.h
+index 1c08519..bec92d9 100644
+--- a/linux-2.6.22.19-cs543/include/asm-x86_64/unistd.h
++++ b/linux-2.6.22.19-cs543/include/asm-x86_64/unistd.h
+@@ -644,6 +644,10 @@ __SYSCALL(__NR_swipe, sys_swipe)
+ __SYSCALL(__NR_forcewrite, sys_forcewrite)
+ #define __NR_myjoin 292
+ __SYSCALL(__NR_myjoin, sys_myjoin)
++#define __NR_myreceive 294
++__SYSCALL(__NR_myreceive, sys_myreceive)
++#define __NR_mysend 293
++__SYSCALL(__NR_mysend, sys_mysend)
+ 
+ #ifndef __NO_STUBS
+ #define __ARCH_WANT_OLD_READDIR
+diff --git a/linux-2.6.22.19-cs543/include/linux/sched.h b/linux-2.6.22.19-cs543/include/linux/sched.h
+index b4f2b5d..b63e7f2 100644
+--- a/linux-2.6.22.19-cs543/include/linux/sched.h
++++ b/linux-2.6.22.19-cs543/include/linux/sched.h
+@@ -1076,6 +1076,8 @@ struct task_struct {
+ #ifdef CONFIG_FAULT_INJECTION
+ 	int make_it_fail;
+ #endif
++
++	struct list_head msgs;
+ };
+ 
+ static inline pid_t process_group(struct task_struct *tsk)
+diff --git a/linux-2.6.22.19-cs543/include/linux/syscalls.h b/linux-2.6.22.19-cs543/include/linux/syscalls.h
+index 7859236..9873f16 100644
+--- a/linux-2.6.22.19-cs543/include/linux/syscalls.h
++++ b/linux-2.6.22.19-cs543/include/linux/syscalls.h
+@@ -618,6 +618,8 @@ asmlinkage long sys_zombify(pid_t pid);
+ asmlinkage long sys_myjoin(pid_t pid);
+ asmlinkage long sys_quad(pid_t pid);
+ asmlinkage long sys_swipe(pid_t target, pid_t victim);
++asmlinkage int myreceive(pid_t pid, int n, char*buf);
++asmlinkage long sys_mysend(pid_t pid, int n, char* buf);
+ int kernel_execve(const char *filename, char *const argv[], char *const envp[]);
+ 
+ #endif
+diff --git a/linux-2.6.22.19-cs543/kernel/sched.c b/linux-2.6.22.19-cs543/kernel/sched.c
+index b839161..091435c 100644
+--- a/linux-2.6.22.19-cs543/kernel/sched.c
++++ b/linux-2.6.22.19-cs543/kernel/sched.c
+@@ -2083,6 +2083,31 @@ struct msg
+ 	struct list_head msgList;
+ };
+ 
++asmlinkage int sys_myreceive(pid_t pid, int n, char*buf) {
++	
++	struct msg * msgStruct;
++	int copy_bytes;
++	
++	list_for_each_entry(msgStruct, &current->msgs, msgList) {
++	//negative pid for all processes, exact pid for specific process
++		if(msgStruct->sender < 0 || msgStruct->sender == pid) {
++			//data sent is greater than what the user wants
++			if (msgStruct->length > n) {
++				copy_bytes = n;
++			} else {
++				//data sent is less than what the user wants, so send the max possible
++				copy_bytes = msgStruct->length;
++			}	
++			//send the message to user space
++			copy_to_user(buf, msgStruct->text, copy_bytes);
++			//return the amount of bytes returned
++			return copy_bytes;
++		}
++	}
++	//pid is not one we want to read from
++	return 0;
++}
++
+ asmlinkage long sys_mysend(pid_t pid, int n, char* buf) {
+ 	struct task_struct *task;
+         for_each_process(task) {
+@@ -2109,8 +2134,12 @@ asmlinkage long sys_mysend(pid_t pid, int n, char* buf) {
+ 	temp->length = n;
+ 	temp->sender = current->pid;
+ 	INIT_LIST_HEAD(&(temp->msgList));
++	INIT_LIST_HEAD(&(task->msgs));
+ 
+-	list_add_tail(&(temp->msgList), &(task->msgs));
++    spinlock_t lock = SPIN_LOCK_UNLOCKED;
++    spin_lock(&lock);
++    list_add_tail(&(temp->msgList), &(task->msgs));
++    spin_unlock(&lock);
+ 
+ 	wake_up_process(task);
+ 	schedule();
