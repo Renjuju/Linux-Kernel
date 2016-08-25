@@ -66,9 +66,26 @@ Segmented memory schemes as page memory schemes require the memory to appear in 
 
 [10 pts] Virtual Memory. When processes are allowed to grow larger than memory, page tables also grow very large. How could we organize page tables and TLB to keep access times as quick as possible for codes with good locality? For example, assume physical memory is 512K, each page is 1K, and a TLB of size 128. If we assume most processes are 256K or less, then we could allocate a fixed-size page table with 256 entries. Now in the unexpected case, where the page table grows larger than 256 entries, how should we organize it? What implications does your design have on average access time and on the maximum virtual memory size of a program?
 
+We can minimize the amount of page tables used by using a page directory with 256 entries for each page. If the page table grows larger than 256 entries, we add another directory with another 256 entries to accomidate for the lack of page table size. The main implication is that the average access time now double since the total number o entries has doubled. 
 
 [15 pts] Page Replacement Algorithms. Consider the following page reference stream and 3 page frames: 0 1 2 3 2 4 3 1 1 5 2 4 6 3 3 4 6 3 4 7. 
 For the MIN, FIFO, and LRU algorithms, show the contents of the page frame after each reference, and then compute the total number of page faults, divided in to cold misses and other misses.
+FIFO
+0 3 3 3 5 5 5 6 6 6  
+1 1 4 4 4 2 2 2 3 3 
+2 2 2 1 1 1 4 4 4 7
+
+0 4 4
+1 1 5
+2 2 2
+3 3 3
+
+shit
+
+10 page faults
+
+LRU
+
 
 [15 Points] Suppose we have virtual memory containing 16 pages with 1024 bytes per page and physical memory with 32 page frames.
 
