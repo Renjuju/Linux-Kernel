@@ -1,0 +1,100 @@
+CS370 Operating Systems Written Assignment
+
+OS Design, Distributed Filesystems, Protection, and Security (85 Points)
+
+[20 points] Segmented Memory. Consider the following segmented memory state. Given the following memory state, requests, and algorithms show the state of memory after each request. If the current state cannot accommodate a request, perform process relocation (for a growing process) or compaction. For relocation, follow the specified algorithm. For compaction, first find (top down) a process with holes on both sides of it. If the two holes are sufficient to accommodate the new process, move up the middle process in the hole. Otherwise, compact all processes up until there is large enough hole to accommodate the request.
+	
+Process E starts and requests 300 memory units. 
+Process A requests 400 more memory units. 
+Process B exits. 
+Process F starts and requests 800 memory units. 
+Process C exits. 
+Process G starts and requests 900 memory units.
+
+(6 pts) Describe the contents of memory after each request using first fit (draw a picture or write the range of addresses for each process).
+Process E will use 300 to 600
+When Process A requests 400 more memory units Process E will be relocated to 1500-1800
+Process A will use 0-700
+900-1500 is free after B exits
+Process F uses 700-1500 after its request
+1800-2000 is free after C exits
+Process G uses 1800-2700
+
+
+(6 pts) Describe the contents of memory after each request using best fit.
+Process E will use 1500-1800
+Process A uses 0-700
+900-1500 is free after B exits
+Process F uses 2000-2800
+1800-2000 is free after process C exits
+Process G uses 900-1800
+
+(6 pts) Describe the contents of memory after each request using worst fit.
+Process E uses 2000-2300
+Process A uses 0-300 & 2300-2700
+900-1500 is free after B exits
+Process F uses 300-1100
+1800-2000 is free after C exits
+Process G uses 1100-2000
+
+
+(2 pts) For this example, which is best? 
+It appears that both worst and best fit are better than first fit
+They tie for the best in this scenario as each takes 6 steps to fill the memory
+
+[5 pts] Paging. Consider a process with a logical address space of 4 pages of 1024 bytes per page, mapped onto a physical memory of 64 frames.
+
+(2 pts) How many bits are there in the logical address?
+2^2 * 2^10 = 2^12
+12 bits
+
+(2 pts) How many bits are there in the physical address?
+2^6 * 2^10 = 2^16 
+16 bits
+
+(1 pts) Given the following page table map: page 0 is mapped to frame 3, page 1 is mapped to frame 14, page 2 to frame 6, and page 3 to frame 33, what is the physical address of page 2 byte 256?
+1024 + 256 = 
+1280
+
+[10 pts] TLBs. What is the advantage of a TLB that has an entry for every page frame? What is the advantage of a TLB smaller than the total number of frames? Which architectural design decisions determine this size?
+Since TLBs are specialized fast-lookup hardware cache, the advantage is that the TLB has access to every frame, thus accessing memory at any frame is 
+super fast. A TLB smaller than the total number of frames can hold more cache for certain areas which are frequently visited, thus faster access to frequently visited frames, making it faster than a TLB architecture is equal to the total number of frames. The architectural design decision that determines the size is considering whether the accesses can be predicted well or not. If there are arbitrary accesses to random frames, then the TLB that has an entry for every page frame might be
+optimal and the opposite case would call for a TLB smaller than the total number of frames. 
+
+[10 pts] Sharing. Is data sharing easier in paged or segmented memory schemes? 
+Segmented memory schemes as page memory schemes require the memory to appear in the same location in the logical address space of all processes 
+
+[10 pts] Virtual Memory. When processes are allowed to grow larger than memory, page tables also grow very large. How could we organize page tables and TLB to keep access times as quick as possible for codes with good locality? For example, assume physical memory is 512K, each page is 1K, and a TLB of size 128. If we assume most processes are 256K or less, then we could allocate a fixed-size page table with 256 entries. Now in the unexpected case, where the page table grows larger than 256 entries, how should we organize it? What implications does your design have on average access time and on the maximum virtual memory size of a program?
+
+
+[15 pts] Page Replacement Algorithms. Consider the following page reference stream and 3 page frames: 0 1 2 3 2 4 3 1 1 5 2 4 6 3 3 4 6 3 4 7. 
+For the MIN, FIFO, and LRU algorithms, show the contents of the page frame after each reference, and then compute the total number of page faults, divided in to cold misses and other misses.
+
+[15 Points] Suppose we have virtual memory containing 16 pages with 1024 bytes per page and physical memory with 32 page frames.
+
+How long is a virtual address?
+
+How long is a physical address?
+
+Given the following page table, what is the physical address corresponding to the virtual address of page 6, byte 891?
+What would be the effect of a page reference to page 8, byte 103?
+
+
+Virtual	Page
+Page	Frame
+0	0
+1	8
+2	11
+3	6
+4	3
+5	1
+6	9
+7	10
+8	INV
+9	INV
+10	INV
+11	INV
+12	INV
+13	INV
+14	INV
+15	INV
