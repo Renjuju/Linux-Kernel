@@ -100,12 +100,30 @@ MIN
 [15 Points] Suppose we have virtual memory containing 16 pages with 1024 bytes per page and physical memory with 32 page frames.
 
 How long is a virtual address?
+log(2^10) = 10 +
+log(2^5) = 5
+
+= 
+15 bits long
 
 How long is a physical address?
 
-Given the following page table, what is the physical address corresponding to the virtual address of page 6, byte 891?
-What would be the effect of a page reference to page 8, byte 103?
+log(2^10) = 10 +
+log(2^5) = 5
 
+= 
+15 bits long
+
+
+Given the following page table, what is the physical address corresponding to the virtual address of page 6, byte 891?
+1024 * 6 + 891 = 7038
+2^13 = 8192
+log(2^13) = 13
+
+13 is the physical address
+
+What would be the effect of a page reference to page 8, byte 103?
+Possible page fault or error since the frame is INV
 
 Virtual	Page
 Page	Frame
